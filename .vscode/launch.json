@@ -1,25 +1,31 @@
-{
+
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    {
     "version": "0.2.0",
     "configurations": [
+        // ... (your existing "Python Debugger: Current File" and "Node.js" configs)
 
         {
-            "name": "Python Debugger: Current File",
+            "name": "Python: FastAPI Backend",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Node.js: Run Server File",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/frontend/server.js",  // replace with actual file
-            "cwd": "${workspaceFolder}/frontend",
-            "console": "integratedTerminal"
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--host", "0.0.0.0",
+                "--port", "8000",
+                "--reload"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "env": {
+                // UPDATE THIS LINE FOR SQLITE
+                "DATABASE_URL": "sqlite:///./sql_app.db",
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "cwd": "${workspaceFolder}"
         }
     ]
-      
 }
