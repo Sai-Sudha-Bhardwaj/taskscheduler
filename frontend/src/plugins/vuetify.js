@@ -1,30 +1,30 @@
-// taskScheduler/frontend/src/plugins/vuetify.js
+// frontend/src/plugins/vuetify.js
 
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import 'vuetify/styles' // Import Vuetify styles
-import '@mdi/font/css/materialdesignicons.css' // Import Material Design Icons CSS
+import { createVuetify } from 'vuetify'; // This is the only Vuetify import you need
+// Remove any lines like:
+// import Vue from 'vue';
+// import Vuetify from 'vuetify/lib';
+// import * as components from 'vuetify/components';
+// import * as directives from 'vuetify/directives';
+
+import 'vuetify/styles'; // Correct way to import Vuetify 3 CSS
+import '@mdi/font/css/materialdesignicons.css'; // Material Design Icons CSS
 
 export default createVuetify({
-  components,
-  directives,
+  // Components and directives are now auto-imported by the Vite plugin (@vuetify/vite-plugin-vuetify)
   icons: {
-    defaultSet: 'mdi', // This tells Vuetify to use MDI as the default icon set
+    iconfont: 'mdi', // 'mdi' is for Material Design Icons
   },
-  theme: {
-    themes: {
-      light: {
-        colors: {
-          primary: '#3f51b5', // A nice blue for primary actions
-          secondary: '#b0bec5', // A soft grey for secondary elements
-          accent: '#8c9eff', // A brighter accent color
-          error: '#f44336',
-          info: '#2196f3',
-          success: '#4caf50',
-          warning: '#ffc107',
-        },
-      },
-    },
-  },
-})
+  // You can define a custom theme here if needed
+  // theme: {
+  //   defaultTheme: 'light',
+  //   themes: {
+  //     light: {
+  //       colors: {
+  //         primary: '#1867C0',
+  //         secondary: '#5CBBF6',
+  //       },
+  //     },
+  //   },
+  // },
+});

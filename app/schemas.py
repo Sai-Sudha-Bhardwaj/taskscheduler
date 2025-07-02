@@ -1,54 +1,63 @@
-# taskScheduler/app/schemas.py
+# app/schemas.py
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
-from datetime import datetime # Important for handling date/time fields
+from datetime import datetime
 
-# --- Base Schemas ---
-# Common fields for Task
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None # 'sub' in JWT will be the email/username
+
+# --- User Schemas ---
+class UserBase(BaseModel):
+    email: EmailStr # Use EmailStr for email validation
+
+class UserCreate(UserBase):
+    password: str
+
+class UserUpdate(UserBase):
+    # Allow partial updates: email and password are optional
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class User(UserBase):
+    id: int
+    is_active: bool
+    tasks: List["Task"] = [] # Type hint for relationship
+
+    class Config:
+        from_attributes = True # For Pydantic v2+, use from_attributes. For v1, use orm_mode = True
+
+# --- Task Schemas ---
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
-    completed: Optional[bool] = False # Make optional for updates, default to False
-    due_date: Optional[datetime] = None # Optional datetime field
-
-# --- Create Schemas ---
-# Schema for creating a new Task (client sends this)
-class TaskCreate(TaskBase):
-    # No additional fields beyond TaskBase for creation,
-    # as owner_id is passed via path parameter and timestamps are DB-generated.
-    pass
-
-# Schema for creating a new User
-class UserCreate(BaseModel):
-    username: str
-
-# --- Update Schemas ---
-# Schema for updating an existing Task (all fields optional for partial updates)
-class TaskUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    completed: Optional[bool] = None
+    is_completed: bool = False
     due_date: Optional[datetime] = None
 
-# --- Response Schemas (for data returned by the API) ---
-# Full Task schema for responses (includes DB-generated fields)
+class TaskCreate(TaskBase):
+    pass
+
+class TaskUpdate(TaskBase):
+    # Allow partial updates for tasks
+    title: Optional[str] = None
+    description: Optional[str] = None
+    is_completed: Optional[bool] = None
+    due_date: Optional[datetime] = None
+
 class Task(TaskBase):
     id: int
-    owner_id: int # The ID of the user who owns this task
+    owner_id: int
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        # Pydantic v2: use from_attributes for ORM compatibility
-        from_attributes = True
+        from_attributes = True # For Pydantic v2+, use from_attributes. For v1, use orm_mode = True
 
-# Full User schema for responses (can include a list of their tasks)
-class User(BaseModel):
-    id: int
-    username: str
-    tasks: List[Task] = [] # List of Task schemas for nested representation
-
-    class Config:
-        # Pydantic v2: use from_attributes for ORM compatibility
-        from_attributes = True
+# Update forward references for Pydantic (needed if classes refer to each other)
+# This line is crucial for the `tasks: List["Task"]` in the User schema
+User.model_rebuild()
